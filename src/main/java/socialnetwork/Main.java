@@ -1,14 +1,15 @@
 package socialnetwork;
 
-import socialnetwork.domain.console.Console;
-import socialnetwork.domain.console.LoginConsole;
+import socialnetwork.ui.MainFX;
 
-import java.util.Scanner;
 
 public class Main
 {
     public static void main(String[] args)
     {
+        MainFX.main(args);
+
+        /*
         Console console = new Console();
         LoginConsole loginConsole = new LoginConsole();
 
@@ -35,6 +36,7 @@ public class Main
                 default: { System.out.println("Invalid command!"); break; }
             }
         }
+         */
     }
 }
 

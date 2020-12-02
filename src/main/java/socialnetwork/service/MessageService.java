@@ -14,23 +14,18 @@ import java.util.Random;
 public class MessageService
 {
     private final Repository<Long, Message> messageRepository;
-    private final Repository<Long, User> userRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
     private final Validator<Message> messageValidator;
     private Long messageID = 0L;
 
-    public MessageService(Repository<Long, Message> messageRepository, Repository<Long, User> userRepository, Repository<Tuple<Long, Long>, Friendship> friendshipRepository, MessageValidator messageValidator)
+    public MessageService(Repository<Long, Message> messageRepository, Repository<Tuple<Long, Long>, Friendship> friendshipRepository, MessageValidator messageValidator)
     {
         this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
         this.messageValidator = messageValidator;
     }
 
-    public Long generateMessageID()
-    {
-        return messageID++;
-    }
+    public Long generateMessageID() { return messageID++; }
 
     public void sendMessage(Message message)
     {
@@ -60,13 +55,23 @@ public class MessageService
             throw new ServiceException(errorMessage[0]);
     }
 
-    public Message reply(Message message)
+    public Message replyToAll(Message message, ArrayList<Long> arguments, Long from)
     {
-        Random random = new Random();
-        while(this.messageRepository.findOne(message.getId()) != null)
-        {
-            message.setId(random.nextLong());
-        }
+        ArrayList<Long> recipients = new ArrayList<>();
+        arguments.forEach(x -> {
+            if(!x.equals(from))
+            {
+                recipients.add(x);
+            } });
+        message.setTo(recipients);
+        return this.messageRepository.save(message);
+    }
+
+    public Message replyToOne(Message message, Long recipient)
+    {
+        ArrayList<Long> recipients = new ArrayList<>();
+        recipients.add(recipient);
+        message.setTo(recipients);
         return this.messageRepository.save(message);
     }
 

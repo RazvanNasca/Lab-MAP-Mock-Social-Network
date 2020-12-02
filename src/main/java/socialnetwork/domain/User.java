@@ -8,12 +8,14 @@ public class User extends Entity<Long>
 {
     private String firstName;
     private String lastName;
+    private String email;
     private List<User> friends;
 
-    public User(String firstName, String lastName)
+    public User(String firstName, String lastName, String email)
     {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.friends = new ArrayList<>();
     }
 
@@ -37,6 +39,10 @@ public class User extends Entity<Long>
         this.lastName = lastName;
     }
 
+    public String getEmail() { return this.email; }
+
+    public void setEmail(String email) { this.email = email; }
+
     public List<User> getFriends()
     {
         return this.friends;
@@ -53,6 +59,7 @@ public class User extends Entity<Long>
                 "ID=" + getId() +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", email=" + email + '\'' +
                 ", friends=" + getFriendList() +
                 '}';
     }
@@ -86,12 +93,13 @@ public class User extends Entity<Long>
         User that = (User) o;
         return getFirstName().equals(that.getFirstName()) &&
                 getLastName().equals(that.getLastName()) &&
+                getEmail().equals(that.getEmail()) &&
                 getFriends().equals(that.getFriends());
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(getFirstName(), getLastName(), getFriends());
+        return Objects.hash(getFirstName(), getLastName(), getEmail(), getFriends());
     }
 }

@@ -2,12 +2,15 @@ package socialnetwork.domain.console;
 
 import socialnetwork.MyException;
 import socialnetwork.config.ApplicationContext;
+import socialnetwork.domain.Account;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
+import socialnetwork.domain.validators.AccountValidator;
 import socialnetwork.domain.validators.FriendshipValidator;
 import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.database.AccountDatabaseRepository;
 import socialnetwork.repository.database.FriendshipDatabaseRepository;
 import socialnetwork.repository.database.UserDatabaseRepository;
 import socialnetwork.service.FriendshipService;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/*
 public class Console
 {
     private final UserService userService;
@@ -33,8 +37,9 @@ public class Console
 
         Repository<Long, User> userDatabaseRepository = new UserDatabaseRepository(url, username, password);
         Repository<Tuple<Long, Long>, Friendship> friendshipDatabaseRepository = new FriendshipDatabaseRepository(url, username, password);
+        Repository<String, Account> accountDatabaseRepository = new AccountDatabaseRepository(url, username, password);
 
-        this.userService = new UserService(userDatabaseRepository, friendshipDatabaseRepository, new UserValidator());
+        this.userService = new UserService(userDatabaseRepository, friendshipDatabaseRepository, accountDatabaseRepository, new UserValidator(), new AccountValidator());
         this.friendshipService = new FriendshipService(userDatabaseRepository, friendshipDatabaseRepository, new FriendshipValidator());
 
         scan = new Scanner(System.in);
@@ -168,3 +173,4 @@ public class Console
             dto.forEach((k, v) -> System.out.println(k.getFirstName() + " | " + k.getLastName() + " | " + v));
     }
 }
+*/

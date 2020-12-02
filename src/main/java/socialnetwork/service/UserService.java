@@ -1,5 +1,6 @@
 package socialnetwork.service;
 
+import socialnetwork.domain.Account;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
@@ -14,19 +15,35 @@ public class UserService
 {
     private final Repository<Long, User> userRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
+    private final Repository<String, Account> accountRepository;
     private final Validator<User> validator;
+    private final Validator<Account> accountValidator;
+    private long userID = 0L;
 
-    public UserService(Repository<Long,User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Validator<User> validator)
+    public UserService(Repository<Long,User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Repository<String, Account> accountRepository, Validator<User> validator, Validator<Account> accountValidator)
     {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
+        this.accountRepository = accountRepository;
         this.validator = validator;
+        this.accountValidator = accountValidator;
     }
 
-    public User addUser(User user)
+    public Long generateUserID() { return this.userID++; }
+
+    public User addUser(User user, Account account)
     {
         this.validator.validate(user);
-        return userRepository.save(user);
+        this.accountValidator.validate(account);
+
+        if(this.accountRepository.findOne(account.getId()) != null)
+        {
+            throw new ServiceException("Email taken!");
+        }
+
+        User savedUser = this.userRepository.save(user);
+        this.accountRepository.save(account);
+        return savedUser;
     }
 
     public User deleteUser(long id)
@@ -35,6 +52,7 @@ public class UserService
         if(user == null)
             throw new ServiceException("There is no user with given ID!");
 
+        this.accountRepository.delete(user.getEmail());
         return this.userRepository.delete(id);
     }
 

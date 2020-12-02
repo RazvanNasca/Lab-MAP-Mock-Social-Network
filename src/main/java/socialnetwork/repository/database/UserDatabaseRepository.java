@@ -43,8 +43,9 @@ public class UserDatabaseRepository implements Repository<Long, User>
             Long idUser = resultSet.getLong("id");
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
+            String email = resultSet.getString("email");
 
-            user = new User(firstName, lastName);
+            user = new User(firstName, lastName, email);
             user.setId(idUser);
         }catch (SQLException e)
         {
@@ -67,8 +68,9 @@ public class UserDatabaseRepository implements Repository<Long, User>
                 Long id = resultSet.getLong("id");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
+                String email = resultSet.getString("email");
 
-                User user = new User(firstName, lastName);
+                User user = new User(firstName, lastName, email);
                 user.setId(id);
                 users.add(user);
             }
@@ -84,16 +86,14 @@ public class UserDatabaseRepository implements Repository<Long, User>
     @Override
     public User save(User entity)
     {
-        if(this.findOne(entity.getId()) != null)
-            throw new RepositoryException("ID already exists!");
-
         try
         {
-            PreparedStatement statement = this.connection.prepareStatement("INSERT INTO Utilizator(id, first_name, last_name) VALUES (?, ?, ?)");
+            PreparedStatement statement = this.connection.prepareStatement("INSERT INTO Utilizator(id, first_name, last_name, email) VALUES (?, ?, ?, ?)");
 
             statement.setLong(1, entity.getId());
             statement.setString(2, entity.getFirstName());
             statement.setString(3, entity.getLastName());
+            statement.setString(4, entity.getEmail());
 
             statement.executeUpdate();
         }catch (SQLException e)

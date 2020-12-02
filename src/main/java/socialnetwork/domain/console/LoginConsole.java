@@ -3,10 +3,7 @@ package socialnetwork.domain.console;
 import socialnetwork.MyException;
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.*;
-import socialnetwork.domain.validators.FriendRequestValidator;
-import socialnetwork.domain.validators.FriendshipValidator;
-import socialnetwork.domain.validators.MessageValidator;
-import socialnetwork.domain.validators.UserValidator;
+import socialnetwork.domain.validators.*;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.database.FriendRequestDatabaseRepository;
 import socialnetwork.repository.database.FriendshipDatabaseRepository;
@@ -22,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
+/*
 public class LoginConsole
 {
     private final FriendRequestService friendRequestService;
@@ -45,8 +43,8 @@ public class LoginConsole
         Repository<Long, Message> messageRepository = new MessageDatabaseRepository(url, username, password);
 
         this.friendRequestService = new FriendRequestService(friendRequestRepository, userRepository, friendshipRepository, new FriendRequestValidator());
-        this.userService = new UserService(userRepository, friendshipRepository, new UserValidator());
-        this.messageService = new MessageService(messageRepository, userRepository, friendshipRepository, new MessageValidator());
+        this.userService = new UserService(userRepository, friendshipRepository, new UserValidator(), new AccountValidator());
+        this.messageService = new MessageService(messageRepository, friendshipRepository, new MessageValidator());
         this.friendshipService = new FriendshipService(userRepository, friendshipRepository, new FriendshipValidator());
 
         this.scan = new Scanner(System.in);
@@ -145,20 +143,15 @@ public class LoginConsole
         }
 
         ArrayList<Long> recipients = new ArrayList<>();
-        for(Long recipient : originalMessage.getTo())
-        {
-            if(!recipient.equals(this.username))
-            {
-                recipients.add(recipient);
-            }
-        }
-        recipients.add(originalMessage.getFrom());
+
+        originalMessage.getTo().add(originalMessage.getFrom());
+
         Message message = new Message(this.username, recipients, text, date);
         message.setOriginalMessageId(originalMessageId);
         message.setId(this.messageService.generateMessageID());
         try
         {
-            this.messageService.reply(message);
+            this.messageService.replyToAll(message, originalMessage.getTo(), this.username);
         }catch (MyException e)
         {
             System.out.println(e.getMessage());
@@ -189,7 +182,6 @@ public class LoginConsole
         }
 
         ArrayList<Long> recipients = new ArrayList<>();
-        recipients.add(originalMessage.getFrom());
 
         Message message = new Message(this.username, recipients, text, date);
         message.setOriginalMessageId(originalMessageId);
@@ -197,7 +189,7 @@ public class LoginConsole
 
         try
         {
-            this.messageService.reply(message);
+            this.messageService.replyToOne(message, originalMessage.getFrom());
         }catch (MyException e)
         {
             System.out.println(e.getMessage());
@@ -408,3 +400,4 @@ public class LoginConsole
         }
     }
 }
+*/
