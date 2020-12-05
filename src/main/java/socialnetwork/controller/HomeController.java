@@ -128,8 +128,9 @@ public class HomeController implements Observer<UserEvent> {
         if (selected != null)
         {
             FriendRequest friendRequest = new FriendRequest(activeUser.getId(), selected.getId());
-            try {
-                friendRequestService.addFriendRequest(friendRequest);
+            try
+            {
+                this.friendRequestService.addFriendRequest(friendRequest);
                 this.messageToUser.setText("Friend request sent successfully!");
                 this.messageToUser.setTextFill(Color.DARKGREEN);
             }catch (MyException e)
@@ -152,7 +153,8 @@ public class HomeController implements Observer<UserEvent> {
         {
             Friendship friendship = new Friendship();
             friendship.setId(new Tuple<>(activeUser.getId(), selected.getId()));
-            try {
+            try
+            {
                 Friendship deleted = friendshipService.removeFriendship(friendship);
                 initFriends();
                 this.messageToUser.setText("Friend removed successfully!");
@@ -170,12 +172,15 @@ public class HomeController implements Observer<UserEvent> {
         }
     }
 
-    public void handleRequests(ActionEvent actionEvent) {
-        try {
+    public void handleRequests(ActionEvent actionEvent)
+    {
+        try
+        {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/view/FriendRequests.fxml"));
             GridPane root = loader.load();
             FriendRequestsController controller = loader.getController();
+            this.friendRequestService.addObserver(controller);
             Scene scene = new Scene(root, 600, 500);
             Stage stage = new Stage();
             stage.setTitle("Friend requests");
@@ -183,18 +188,21 @@ public class HomeController implements Observer<UserEvent> {
             stage.getIcons().add(new Image("/images/request.png"));
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void update(UserEvent userEvent) {
+    public void update(UserEvent userEvent)
+    {
         initUsers();
         initFriends();
     }
 
-    public void handleRefresh(ActionEvent actionEvent) {
+    public void handleRefresh(ActionEvent actionEvent)
+    {
         initFriends();
         initUsers();
     }

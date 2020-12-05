@@ -127,10 +127,8 @@ public class FriendRequestService implements Observable<FriendRequestEvent>
     {
         FriendRequest friendRequest = this.friendRequestRepository.findOne(new Tuple<>(from, to));
 
-        if(friendRequest == null)
-            throw new ServiceException("You are not a friend to user with ID " + from + "!");
-        if(friendRequest.getStatus() != Status.APPROVED)
-            throw new ServiceException("Friendship does not exist!");
+        if(friendRequest.getStatus() != Status.PENDING)
+            throw new ServiceException("Cannot remove friend request!");
 
         this.friendRequestRepository.delete(new Tuple<>(from, to));
         FriendRequest deletedFriendRequest = this.friendRequestRepository.delete(new Tuple<>(from, to));
