@@ -24,4 +24,5 @@ public class Account extends Entity<String>
     public Long getUserID() { return this.userID; }
 
     public void setUserID(Long userID) { this.userID = userID; }
+
 }

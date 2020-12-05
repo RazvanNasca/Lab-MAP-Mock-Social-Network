@@ -1,5 +1,5 @@
 .root {
-    -fx-background-image: url("/images/background.png");
+    -fx-background-image: url("/images/background2.jpg");
     -fx-background-repeat: stretch;
     -fx-background-size: 1600 1000;
     -fx-background-position: center center;
@@ -11,5 +11,5 @@
 }
 
 #signInButton {
-    -fx-background-image: url("/images/background.png");
+    -fx-background-image: url("/images/buttonbg.jpg");
 }

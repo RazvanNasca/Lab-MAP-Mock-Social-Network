@@ -3,8 +3,10 @@ package socialnetwork.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import socialnetwork.MyException;
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.Account;
@@ -27,6 +29,7 @@ public class SignupController
     public UserService userService;
     public TextField firstNameField;
     public TextField lastNameField;
+    public Label messageToUser;
 
     @FXML
     public void initialize()
@@ -58,7 +61,9 @@ public class SignupController
 
         if(password1.compareTo(password2) != 0)
         {
-            MessageAlert.showErrorMessage(null, "Passwords do not match!");
+            messageToUser.setText("Passwords do not match!");
+            messageToUser.setTextFill(Color.DARKRED);
+
             this.passwordField1.setText("");
             this.passwordField2.setText("");
         }
@@ -72,10 +77,12 @@ public class SignupController
 
             this.userService.addUser(user, account);
 
-            MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "Account created successfully!");
+            messageToUser.setText("Account created successfully!");
+            messageToUser.setTextFill(Color.DARKGREEN);
         }catch (MyException e)
         {
-            MessageAlert.showMessage(null, Alert.AlertType.WARNING, "Something went wrong", e.getMessage());
+            messageToUser.setText(e.getMessage());
+            messageToUser.setTextFill(Color.DARKRED);
             this.firstNameField.setText("");
             this.lastNameField.setText("");
             this.usernameField.setText("");

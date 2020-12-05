@@ -30,6 +30,8 @@
 
     <PasswordField fx:id="passwordField2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
+    <Label fx:id="messageToUser" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+
     <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
         <Button id="signInButton" onAction="#handleSubmitButtonAction" text="Sign Up" />
     </HBox>

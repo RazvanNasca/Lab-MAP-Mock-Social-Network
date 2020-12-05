@@ -1,24 +1,30 @@
 package socialnetwork.service;
 
+import org.graalvm.compiler.lir.LIRInstruction;
 import socialnetwork.domain.Account;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.Validator;
+import socialnetwork.event.ChangeEventType;
+import socialnetwork.event.UserEvent;
+import socialnetwork.observer.Observable;
+import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
-public class UserService
+public class UserService implements Observable<UserEvent>
 {
     private final Repository<Long, User> userRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
     private final Repository<String, Account> accountRepository;
     private final Validator<User> validator;
     private final Validator<Account> accountValidator;
-    private long userID = 0L;
+
+    private List<Observer<UserEvent>> observers;
 
     public UserService(Repository<Long,User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Repository<String, Account> accountRepository, Validator<User> validator, Validator<Account> accountValidator)
     {
@@ -27,9 +33,19 @@ public class UserService
         this.accountRepository = accountRepository;
         this.validator = validator;
         this.accountValidator = accountValidator;
+        this.observers = new ArrayList<>();
     }
 
-    public Long generateUserID() { return this.userID++; }
+    public Long generateUserID()
+    {
+        Long userID = 1L;
+        Iterable <User> all = getAll();
+
+        for(User u : all)
+            userID++;
+
+        return userID;
+    }
 
     public User addUser(User user, Account account)
     {
@@ -43,6 +59,7 @@ public class UserService
 
         User savedUser = this.userRepository.save(user);
         this.accountRepository.save(account);
+        this.notifyObservers(new UserEvent(ChangeEventType.ADD, savedUser));
         return savedUser;
     }
 
@@ -53,7 +70,9 @@ public class UserService
             throw new ServiceException("There is no user with given ID!");
 
         this.accountRepository.delete(user.getEmail());
-        return this.userRepository.delete(id);
+        User deletedUser = this.userRepository.delete(id);
+        this.notifyObservers(new UserEvent(ChangeEventType.DELETE, deletedUser));
+        return deletedUser;
     }
 
     public Iterable<User> getAll()
@@ -101,5 +120,28 @@ public class UserService
     public User findUser(long id)
     {
         return this.userRepository.findOne(id);
+    }
+
+    public Account findAccount(String username)
+    {
+        Account account = accountRepository.findOne(username);
+        if (account == null)
+            throw new ServiceException("Account does not exist!");
+        return account;
+    }
+
+    @Override
+    public void addObserver(Observer<UserEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<UserEvent> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(UserEvent t) {
+        observers.forEach(x -> x.update(t));
     }
 }

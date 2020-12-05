@@ -9,7 +9,7 @@ public class AccountValidator implements Validator<Account>
     {
         if(!entity.getUsername().matches("\\w+@\\w+\\.com") && !entity.getUsername().matches("\\w+@\\w+\\.ro"))
         {
-            throw new ValidationException("Invalid username!");
+            throw new ValidationException("Invalid email!");
         }
     }
 }

@@ -1,9 +1,14 @@
 package socialnetwork.service;
 
+import socialnetwork.domain.FriendRequest;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.Validator;
+import socialnetwork.event.FriendshipEvent;
+import socialnetwork.event.UserEvent;
+import socialnetwork.observer.Observable;
+import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
 
 import java.util.ArrayList;
@@ -11,15 +16,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FriendshipService
+public class FriendshipService implements Observable<FriendshipEvent>
 {
     private final Repository<Long, User> userRepository;
+    private final Repository<Tuple<Long, Long>, FriendRequest> friendRequestRepository;
     private final Repository<Tuple<Long, Long>, Friendship> friendshipRepository;
     private final Validator<Friendship> friendshipValidator;
 
-    public FriendshipService(Repository<Long,User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Validator<Friendship> friendshipValidator)
+    private List<Observer<FriendshipEvent>> observers=new ArrayList<>();
+
+    public FriendshipService(Repository<Long, User> userRepository, Repository<Tuple<Long, Long>, FriendRequest> friendRequestRepository, Repository<Tuple<Long, Long>, Friendship> friendshipRepository, Validator<Friendship> friendshipValidator)
     {
         this.userRepository = userRepository;
+        this.friendRequestRepository = friendRequestRepository;
         this.friendshipRepository = friendshipRepository;
         this.friendshipValidator = friendshipValidator;
     }
@@ -47,6 +56,8 @@ public class FriendshipService
         if(f != null)
         {
             this.friendshipRepository.delete(f.getId());
+            this.friendRequestRepository.delete(f.getId());
+            this.friendRequestRepository.delete(new Tuple<>(secondID, firstID));
             return f;
         }
         return null;
@@ -124,5 +135,20 @@ public class FriendshipService
                 community.add(user);
 
         return community;
+    }
+
+    @Override
+    public void addObserver(Observer<FriendshipEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<FriendshipEvent> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(FriendshipEvent t) {
+        observers.forEach(x->x.update(t));
     }
 }

@@ -2,20 +2,27 @@ package socialnetwork.service;
 
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.Validator;
+import socialnetwork.event.ChangeEventType;
+import socialnetwork.event.FriendRequestEvent;
+import socialnetwork.observer.Observable;
+import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
-public class FriendRequestService
+public class FriendRequestService implements Observable<FriendRequestEvent>
 {
     private final Repository<Tuple<Long,Long>, FriendRequest> friendRequestRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
     private final Repository<Long, User> userRepository;
     private final Validator<FriendRequest> friendRequestValidator;
 
+    private List<Observer<FriendRequestEvent>> observers;
 
     public FriendRequestService(Repository<Tuple<Long,Long>, FriendRequest> friendRequestRepository, Repository<Long, User> userRepository, Repository<Tuple<Long,Long>, Friendship> friendshipRepository, Validator<FriendRequest> friendRequestValidator)
     {
@@ -23,6 +30,7 @@ public class FriendRequestService
         this.friendshipRepository = friendshipRepository;
         this.userRepository = userRepository;
         this.friendRequestValidator = friendRequestValidator;
+        this.observers = new ArrayList<>();
     }
 
     public FriendRequest addFriendRequest(FriendRequest friendRequest)
@@ -36,21 +44,23 @@ public class FriendRequestService
 
         String errorMessage = "";
         if(secondFriend == null)
-            errorMessage += ">> Cannot find user with id " + to + "!";
+            errorMessage += "Cannot find user with id " + to + "!";
 
         FriendRequest f = this.friendRequestRepository.findOne(new Tuple<>(from, to));
         if(f != null && f.getStatus() != Status.REJECTED)
-            errorMessage += ">> Cannot send friend request!";
+            errorMessage += "Cannot send friend request!";
         f = this.friendRequestRepository.findOne(new Tuple<>(to, from));
         if(f != null && f.getStatus() != Status.REJECTED)
-            errorMessage += ">> Cannot send friend request!";
+            errorMessage += "Cannot send friend request!";
 
         if(errorMessage.compareTo("") != 0)
         {
             throw new ServiceException(errorMessage);
         }
 
-        return this.friendRequestRepository.save(friendRequest);
+        FriendRequest savedFriendRequest =  this.friendRequestRepository.save(friendRequest);
+        this.notifyObservers(new FriendRequestEvent(ChangeEventType.ADD, savedFriendRequest));
+        return savedFriendRequest;
     }
 
     public Map<User, LocalDateTime> getAll(long id)
@@ -74,6 +84,11 @@ public class FriendRequestService
         return dto;
     }
 
+    public Iterable<FriendRequest> getAll()
+    {
+        return this.friendRequestRepository.findAll();
+    }
+
     public void accept(long from, long to)
     {
         FriendRequest friendRequest = this.friendRequestRepository.findOne(new Tuple<>(from, to));
@@ -87,6 +102,7 @@ public class FriendRequestService
         friendRequest.setDate(LocalDateTime.now());
 
         this.friendRequestRepository.update(friendRequest);
+        this.notifyObservers(new FriendRequestEvent(ChangeEventType.UPDATE, friendRequest));
 
         Friendship friendship = new Friendship();
         friendship.setId(new Tuple<>(from, to));
@@ -103,7 +119,8 @@ public class FriendRequestService
         if(friendRequest.getStatus() != Status.PENDING)
             throw new ServiceException("Can't accept this friend request!");
 
-        this.friendRequestRepository.delete(new Tuple<>(from, to));
+        FriendRequest deletedFriendRequest = this.friendRequestRepository.delete(new Tuple<>(from, to));
+        this.notifyObservers(new FriendRequestEvent(ChangeEventType.DELETE, deletedFriendRequest));
     }
 
     public void remove(long from, long to)
@@ -116,5 +133,25 @@ public class FriendRequestService
             throw new ServiceException("Friendship does not exist!");
 
         this.friendRequestRepository.delete(new Tuple<>(from, to));
+        FriendRequest deletedFriendRequest = this.friendRequestRepository.delete(new Tuple<>(from, to));
+        this.notifyObservers(new FriendRequestEvent(ChangeEventType.DELETE, deletedFriendRequest));
+    }
+
+    @Override
+    public void addObserver(Observer<FriendRequestEvent> e)
+    {
+        this.observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<FriendRequestEvent> e)
+    {
+        this.observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(FriendRequestEvent t)
+    {
+        observers.forEach(x->x.update(t));
     }
 }
