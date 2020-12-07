@@ -5,8 +5,8 @@ import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.Validator;
+import socialnetwork.event.ChangeEventType;
 import socialnetwork.event.FriendshipEvent;
-import socialnetwork.event.UserEvent;
 import socialnetwork.observer.Observable;
 import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
@@ -23,7 +23,7 @@ public class FriendshipService implements Observable<FriendshipEvent>
     private final Repository<Tuple<Long, Long>, Friendship> friendshipRepository;
     private final Validator<Friendship> friendshipValidator;
 
-    private List<Observer<FriendshipEvent>> observers=new ArrayList<>();
+    private List<Observer<FriendshipEvent>> observers;
 
     public FriendshipService(Repository<Long, User> userRepository, Repository<Tuple<Long, Long>, FriendRequest> friendRequestRepository, Repository<Tuple<Long, Long>, Friendship> friendshipRepository, Validator<Friendship> friendshipValidator)
     {
@@ -31,6 +31,7 @@ public class FriendshipService implements Observable<FriendshipEvent>
         this.friendRequestRepository = friendRequestRepository;
         this.friendshipRepository = friendshipRepository;
         this.friendshipValidator = friendshipValidator;
+        this.observers = new ArrayList<>();
     }
 
     public Friendship removeFriendship(Friendship friendship) throws ServiceException
@@ -56,6 +57,8 @@ public class FriendshipService implements Observable<FriendshipEvent>
         if(f != null)
         {
             this.friendshipRepository.delete(f.getId());
+            this.notifyObservers(new FriendshipEvent(ChangeEventType.DELETE, f));
+
             this.friendRequestRepository.delete(f.getId());
             this.friendRequestRepository.delete(new Tuple<>(secondID, firstID));
             return f;

@@ -46,7 +46,7 @@ public class FriendRequestsController implements Observer<FriendRequestEvent>
     public Button buttonAccept;
     public Button buttonReject;
     public Label messageToUserForRequest;
-    public Button buttonRefresh;
+    public Button buttonRemove;
 
     private FriendRequestService friendRequestService;
 
@@ -116,19 +116,20 @@ public class FriendRequestsController implements Observer<FriendRequestEvent>
         FriendRequest selected = (FriendRequest) this.requestsReceivedTable.getSelectionModel().getSelectedItem();
         if (selected != null)
         {
-            try {
+            try
+            {
                 this.friendRequestService.accept(selected.getFrom(), HomeController.activeUser.getId());
-                this.friendRequestService.notifyObservers(new FriendRequestEvent(ChangeEventType.UPDATE, selected));
                 this.messageToUserForRequest.setText("Friend request accepted!");
                 this.messageToUserForRequest.setTextFill(Color.DARKGREEN);
-            } catch (MyException e) {
+            } catch (MyException e)
+            {
                 this.messageToUserForRequest.setText(e.getMessage());
                 this.messageToUserForRequest.setTextFill(Color.DARKRED);
             }
         }
         else
         {
-            this.messageToUserForRequest.setText("No item selected!");
+            this.messageToUserForRequest.setText("No request selected!");
             this.messageToUserForRequest.setTextFill(Color.DARKRED);
         }
     }
@@ -138,23 +139,44 @@ public class FriendRequestsController implements Observer<FriendRequestEvent>
         FriendRequest selected = (FriendRequest) this.requestsReceivedTable.getSelectionModel().getSelectedItem();
         if(selected != null)
         {
-            try {
+            try
+            {
                 this.friendRequestService.reject(selected.getFrom(), HomeController.activeUser.getId());
-                this.friendRequestService.notifyObservers(new FriendRequestEvent(ChangeEventType.DELETE, selected));
-            } catch (MyException e) {
+                this.messageToUserForRequest.setText("Friend request rejected!");
+                this.messageToUserForRequest.setTextFill(Color.DARKGREEN);
+            } catch (MyException e)
+            {
                 this.messageToUserForRequest.setText(e.getMessage());
                 this.messageToUserForRequest.setTextFill(Color.DARKRED);
             }
         }
         else
         {
-            this.messageToUserForRequest.setText("No item selected!");
+            this.messageToUserForRequest.setText("No request selected!");
             this.messageToUserForRequest.setTextFill(Color.DARKRED);
         }
     }
 
-    public void handleRefresh(ActionEvent actionEvent) {
-        initSent();
-        initReceived();
+    public void handleRemove(ActionEvent actionEvent)
+    {
+        FriendRequest selected = (FriendRequest) this.requestsSentTable.getSelectionModel().getSelectedItem();
+        if(selected != null)
+        {
+            try
+            {
+                this.friendRequestService.remove(HomeController.activeUser.getId(), selected.getTo());
+                this.messageToUserForRequest.setText("Friend request removed!");
+                this.messageToUserForRequest.setTextFill(Color.DARKGREEN);
+            } catch (MyException e)
+            {
+                this.messageToUserForRequest.setText(e.getMessage());
+                this.messageToUserForRequest.setTextFill(Color.DARKRED);
+            }
+        }
+        else
+        {
+            this.messageToUserForRequest.setText("No request selected!");
+            this.messageToUserForRequest.setTextFill(Color.DARKRED);
+        }
     }
 }
