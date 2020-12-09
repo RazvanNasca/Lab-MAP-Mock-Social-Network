@@ -25,7 +25,6 @@ public class MainFX extends Application
         stage.getIcons().add(new Image("/images/login.png"));
         stage.show();
     }
-    ////Comentariu de verificare
 
     public static void main(String[] args)
     {

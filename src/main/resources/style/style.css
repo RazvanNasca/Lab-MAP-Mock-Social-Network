@@ -59,3 +59,10 @@
 #buttonRefresh {
     -fx-background-image: url("/images/buttonbg.jpg");
 }
+
+.list-cell {
+    -fx-background-color: transparent;
+}
+.list-view {
+    -fx-background-color: transparent;
+}
