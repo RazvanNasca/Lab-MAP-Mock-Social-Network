@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="socialnetwork.controller.MessageController">
+
+    <Label alignment="CENTER" id="labelForTable" text="Friends" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <TableView fx:id="friendsTable" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <columns>
+            <TableColumn fx:id="friendColumnFirstName" text="First Name"/>
+            <TableColumn fx:id="friendColumnLastName" text="Last Name"/>
+        </columns>
+    </TableView>
+
+</GridPane>
+
