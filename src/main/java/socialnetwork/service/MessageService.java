@@ -3,26 +3,32 @@ package socialnetwork.service;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.Tuple;
-import socialnetwork.domain.User;
 import socialnetwork.domain.validators.MessageValidator;
 import socialnetwork.domain.validators.Validator;
+import socialnetwork.event.ChangeEventType;
+import socialnetwork.event.MessageEvent;
+import socialnetwork.observer.Observable;
+import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MessageService
+public class MessageService implements Observable<MessageEvent>
 {
     private final Repository<Long, Message> messageRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
     private final Validator<Message> messageValidator;
+
+    private List<Observer<MessageEvent>> observers;
 
     public MessageService(Repository<Long, Message> messageRepository, Repository<Tuple<Long, Long>, Friendship> friendshipRepository, MessageValidator messageValidator)
     {
         this.messageRepository = messageRepository;
         this.friendshipRepository = friendshipRepository;
         this.messageValidator = messageValidator;
+        this.observers = new ArrayList<>();
     }
 
     public Long generateMessageID()
@@ -60,6 +66,8 @@ public class MessageService
 
         if(finalRecipients.size() > 0)
             this.messageRepository.save(message);
+
+        notifyObservers(new MessageEvent(ChangeEventType.ADD, message));
 
         if(errorMessage[0].compareTo("") != 0)
             throw new ServiceException(errorMessage[0]);
@@ -112,5 +120,17 @@ public class MessageService
             }
         });
         return messages;
+    }
+
+
+    @Override
+    public void addObserver(Observer<MessageEvent> e) { observers.add(e); }
+
+    @Override
+    public void removeObserver(Observer<MessageEvent> e) { observers.remove(e);}
+
+    @Override
+    public void notifyObservers(MessageEvent t) {
+        observers.forEach(x -> x.update(t));
     }
 }

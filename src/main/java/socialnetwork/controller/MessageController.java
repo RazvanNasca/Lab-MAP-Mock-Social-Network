@@ -4,7 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -12,12 +15,15 @@ import javafx.scene.input.MouseEvent;
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.AccountValidator;
-import socialnetwork.domain.validators.FriendshipValidator;
 import socialnetwork.domain.validators.MessageValidator;
 import socialnetwork.domain.validators.UserValidator;
+import socialnetwork.event.MessageEvent;
+import socialnetwork.observer.Observer;
 import socialnetwork.repository.Repository;
-import socialnetwork.repository.database.*;
-import socialnetwork.service.FriendshipService;
+import socialnetwork.repository.database.AccountDatabaseRepository;
+import socialnetwork.repository.database.FriendshipDatabaseRepository;
+import socialnetwork.repository.database.MessageDatabaseRepository;
+import socialnetwork.repository.database.UserDatabaseRepository;
 import socialnetwork.service.MessageService;
 import socialnetwork.service.UserService;
 
@@ -26,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MessageController {
+public class MessageController implements Observer<MessageEvent> {
+
     public TableView<User> friendsTable;
     public TableColumn<User, String> friendColumnFirstName;
     public TableColumn<User, String> friendColumnLastName;
@@ -77,12 +84,14 @@ public class MessageController {
 
         this.userService = new UserService(userDatabaseRepository, friendshipDatabaseRepository, accountDatabaseRepository, new UserValidator(), new AccountValidator());
         this.messageService = new MessageService(messageDatabaseRepository, friendshipDatabaseRepository, new MessageValidator());
+        this.messageService.addObserver(this);
 
         friendColumnFirstName.setCellValueFactory(new PropertyValueFactory<User, String>("firstName"));
         friendColumnLastName.setCellValueFactory(new PropertyValueFactory<User, String>("lastName"));
 
         friendsTable.setItems(modelFriends);
         initFriends();
+
 
         this.friendsTable.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
@@ -110,8 +119,15 @@ public class MessageController {
                     to.add(friend.getId());
                     Message message = new Message(HomeController.activeUser.getId(), to, text, LocalDateTime.now());
                     messageService.sendMessage(message);
+                    messageField.clear();
                 }
             }
         });
+    }
+
+    @Override
+    public void update(MessageEvent messageEvent) {
+        initMessages(friend);
+        initFriends();
     }
 }

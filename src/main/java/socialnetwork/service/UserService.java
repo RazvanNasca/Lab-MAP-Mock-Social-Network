@@ -1,6 +1,5 @@
 package socialnetwork.service;
 
-import org.graalvm.compiler.lir.LIRInstruction;
 import socialnetwork.domain.Account;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
