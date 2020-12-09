@@ -33,7 +33,6 @@ public class MessageController {
     public ListView<String> messageList;
     public TextField messageField;
 
-    private FriendshipService friendshipService;
     private MessageService messageService;
     private UserService userService;
     ObservableList<User> modelFriends = FXCollections.observableArrayList();
@@ -62,26 +61,6 @@ public class MessageController {
                 list.add(this.userService.findUser(x.getFrom()).getFirstName() + ": " + x.getMessage());
         }
         messages.setAll(list);
-
-        /*
-        this.messageList.getItems().clear();
-        List<Message> conversation = this.messageService.getConversation(HomeController.activeUser.getId(), friend.getId());
-        this.modelMessages.setAll(conversation);
-
-        messageList.setCellFactory(listView -> new ListCell<Message>()
-        {
-            @Override
-            protected void updateItem(Message item, boolean empty)
-            {
-                super.updateItem(item, empty);
-                if (item == null || empty)
-                    setText(null);
-                else
-                    setText(userService.findUser(item.getFrom()).getFirstName() + ": " + item.getMessage());
-            }
-        });
-
-         */
     }
 
     @FXML
@@ -94,11 +73,9 @@ public class MessageController {
         Repository<Long, User> userDatabaseRepository = new UserDatabaseRepository(url, username, password);
         Repository<Tuple<Long, Long>, Friendship> friendshipDatabaseRepository = new FriendshipDatabaseRepository(url, username, password);
         Repository<String, Account> accountDatabaseRepository = new AccountDatabaseRepository(url, username, password);
-        Repository<Tuple<Long, Long>, FriendRequest> friendRequestDatabaseRepository = new FriendRequestDatabaseRepository(url, username, password);
         Repository<Long, Message> messageDatabaseRepository = new MessageDatabaseRepository(url, username, password);
 
         this.userService = new UserService(userDatabaseRepository, friendshipDatabaseRepository, accountDatabaseRepository, new UserValidator(), new AccountValidator());
-        this.friendshipService = new FriendshipService(userDatabaseRepository, friendRequestDatabaseRepository,friendshipDatabaseRepository, new FriendshipValidator());
         this.messageService = new MessageService(messageDatabaseRepository, friendshipDatabaseRepository, new MessageValidator());
 
         friendColumnFirstName.setCellValueFactory(new PropertyValueFactory<User, String>("firstName"));
