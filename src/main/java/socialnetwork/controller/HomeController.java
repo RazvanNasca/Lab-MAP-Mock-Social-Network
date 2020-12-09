@@ -59,6 +59,7 @@ public class HomeController implements Observer<UserEvent> {
     public TableColumn <User, String> userColumnLastName;
     public Label messageToUser;
     public Button buttonRefresh;
+    public Button buttonMessage;
 
     private UserService userService;
     private FriendRequestService friendRequestService;
@@ -205,5 +206,25 @@ public class HomeController implements Observer<UserEvent> {
     {
         initFriends();
         initUsers();
+    }
+
+    public void handleMessage(ActionEvent actionEvent)
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/Messages.fxml"));
+            GridPane root = loader.load();
+            Scene scene = new Scene(root, 600, 500);
+            Stage stage = new Stage();
+            stage.setTitle("Messages");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image("/images/message.png"));
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
