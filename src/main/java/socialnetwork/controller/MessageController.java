@@ -2,6 +2,7 @@ package socialnetwork.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -94,6 +95,8 @@ public class MessageController implements Observer<MessageEvent> {
 
         this.errorMessage.setText("");
 
+        friendsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         this.friendsTable.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
             @Override
@@ -138,5 +141,29 @@ public class MessageController implements Observer<MessageEvent> {
     public void update(MessageEvent messageEvent) {
         initMessages(friend);
         initFriends();
+    }
+
+
+    public void handleSendToAll(ActionEvent actionEvent) {
+        List<User> all = friendsTable.getSelectionModel().getSelectedItems();
+
+        String text = messageField.getText();
+        ArrayList<Long> to = new ArrayList<>();
+
+        for(User it: all)
+            to.add(it.getId());
+
+        Message message = new Message(HomeController.activeUser.getId(), to, text, LocalDateTime.now());
+        try
+        {
+            messageService.sendMessage(message);
+            errorMessage.setText("");
+        }catch (MyException e)
+        {
+            errorMessage.setText(e.getMessage());
+            errorMessage.setTextFill(Color.DARKRED);
+        }
+        messageField.clear();
+
     }
 }
