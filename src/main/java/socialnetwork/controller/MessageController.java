@@ -4,14 +4,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import socialnetwork.MyException;
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.AccountValidator;
@@ -39,6 +38,7 @@ public class MessageController implements Observer<MessageEvent> {
     public TableColumn<User, String> friendColumnLastName;
     public ListView<String> messageList;
     public TextField messageField;
+    public Label errorMessage;
 
     private MessageService messageService;
     private UserService userService;
@@ -92,6 +92,7 @@ public class MessageController implements Observer<MessageEvent> {
         friendsTable.setItems(modelFriends);
         initFriends();
 
+        this.errorMessage.setText("");
 
         this.friendsTable.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
@@ -118,7 +119,15 @@ public class MessageController implements Observer<MessageEvent> {
                     ArrayList<Long> to = new ArrayList<>();
                     to.add(friend.getId());
                     Message message = new Message(HomeController.activeUser.getId(), to, text, LocalDateTime.now());
-                    messageService.sendMessage(message);
+                    try
+                    {
+                        messageService.sendMessage(message);
+                        errorMessage.setText("");
+                    }catch (MyException e)
+                    {
+                        errorMessage.setText(e.getMessage());
+                        errorMessage.setTextFill(Color.DARKRED);
+                    }
                     messageField.clear();
                 }
             }

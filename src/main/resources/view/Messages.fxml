@@ -17,6 +17,6 @@
     <ListView fx:id="messageList" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
     <TextField fx:id="messageField" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER"/>
-
+    <Label fx:id="errorMessage" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 </GridPane>
 
