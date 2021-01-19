@@ -2,14 +2,22 @@ package socialnetwork.repository.database;
 
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
+import socialnetwork.domain.User;
+import socialnetwork.paging.Page;
+import socialnetwork.paging.Pageable;
+import socialnetwork.paging.Paginator;
+import socialnetwork.paging.PagingRepository;
 import socialnetwork.repository.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
-public class FriendshipDatabaseRepository implements Repository<Tuple<Long,Long>, Friendship>
+public class FriendshipDatabaseRepository implements PagingRepository<Tuple<Long,Long>, Friendship>
 {
     private Connection connection;
 
@@ -151,5 +159,12 @@ public class FriendshipDatabaseRepository implements Repository<Tuple<Long,Long>
         }
 
         return null;
+    }
+
+
+    @Override
+    public Page<Friendship> findAll(Pageable pageable) {
+        Paginator<Friendship> paginator = new Paginator<Friendship>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

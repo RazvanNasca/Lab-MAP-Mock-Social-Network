@@ -3,21 +3,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane alignment="center" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="socialnetwork.controller.MessageController">
+<GridPane alignment="center" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.MessageController">
 
-    <Label alignment="CENTER" id="labelForTable" text="Friends" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label id="labelForTable" alignment="CENTER" text="Friends list" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 
     <TableView fx:id="friendsTable" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <columns>
-            <TableColumn fx:id="friendColumnFirstName" text="First Name"/>
-            <TableColumn fx:id="friendColumnLastName" text="Last Name"/>
+            <TableColumn fx:id="friendColumnFirstName" text="First Name" />
+            <TableColumn fx:id="friendColumnLastName" text="Last Name" />
         </columns>
     </TableView>
 
-    <ListView fx:id="messageList" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <ListView fx:id="messageList" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-    <TextField fx:id="messageField" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER"/>
-    <Label fx:id="errorMessage" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <Button GridPane.columnIndex="2" GridPane.rowIndex="2" text="Send to all" onAction="#handleSendToAll"> </Button>
+    <TextField fx:id="messageField" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label fx:id="errorMessage" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Button fx:id="buttonSendToAll" onAction="#handleSendToAll"  GridPane.columnIndex="2" GridPane.rowIndex="3"> </Button>
+    <Button fx:id="buttonBack" onAction="#handleBack" GridPane.columnIndex="3" GridPane.rowIndex="0"> </Button>
+
+    <HBox GridPane.columnIndex="0" GridPane.rowIndex="3" spacing="10">
+        <DatePicker fx:id="calendar1" />
+        <DatePicker fx:id="calendar2"/>
+        <Button fx:id="buttonView" onAction="#handleView" />
+    </HBox>
 </GridPane>
-

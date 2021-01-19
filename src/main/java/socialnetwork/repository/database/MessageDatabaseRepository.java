@@ -1,6 +1,10 @@
 package socialnetwork.repository.database;
 
 import socialnetwork.domain.Message;
+import socialnetwork.paging.Page;
+import socialnetwork.paging.Pageable;
+import socialnetwork.paging.Paginator;
+import socialnetwork.paging.PagingRepository;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.RepositoryException;
 
@@ -11,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MessageDatabaseRepository implements Repository<Long, Message>
+public class MessageDatabaseRepository implements PagingRepository<Long, Message>
 {
     private Connection connection;
 
@@ -149,5 +153,11 @@ public class MessageDatabaseRepository implements Repository<Long, Message>
     public Message update(Message entity)
     {
         return null;
+    }
+
+    @Override
+    public Page<Message> findAll(Pageable pageable) {
+        Paginator<Message> paginator = new Paginator<Message>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

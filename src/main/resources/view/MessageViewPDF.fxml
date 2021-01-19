@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center"  styleClass="root" stylesheets="/style/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.MessageViewController">
+
+    <Label id="labelForTable" alignment="CENTER" text="Messsage view" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <ListView fx:id="messageList" GridPane.rowIndex="1" />
+    <HBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="10">
+        <Button fx:id="buttonExport" onAction="#handleExport" > </Button>
+        <Button fx:id="buttonBack" onAction="#handleBack" > </Button>
+    </HBox>
+
+</GridPane>

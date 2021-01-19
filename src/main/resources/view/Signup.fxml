@@ -33,7 +33,12 @@
     <Label fx:id="messageToUser" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
 
     <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
-        <Button id="signInButton" onAction="#handleSubmitButtonAction" text="Sign Up" />
+        <Button fx:id="signInButton" onAction="#handleSubmitButtonAction" />
+    </HBox>
+
+    <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="7">
+        <Hyperlink fx:id="hyperLink" text="Back to login!" onAction="#handleBack">
+        </Hyperlink>
     </HBox>
 
 </GridPane>

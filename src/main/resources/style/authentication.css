@@ -1,7 +1,7 @@
 .root {
-    -fx-background-image: url("/images/background2.jpg");
+    -fx-background-image: url("/images/gif.gif");
     -fx-background-repeat: stretch;
-    -fx-background-size: 1600 1000;
+    -fx-background-size: 493 735;
     -fx-background-position: center center;
 }
 
@@ -10,6 +10,6 @@
     -fx-font-size: 20px;
 }
 
-#signInButton {
-    -fx-background-image: url("/images/buttonbg.jpg");
+#hyperLink{
+    -fx-text-fill: WHITE;
 }

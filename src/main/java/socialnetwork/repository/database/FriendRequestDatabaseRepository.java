@@ -3,6 +3,7 @@ package socialnetwork.repository.database;
 import socialnetwork.domain.FriendRequest;
 import socialnetwork.domain.Status;
 import socialnetwork.domain.Tuple;
+import socialnetwork.paging.*;
 import socialnetwork.repository.Repository;
 
 import java.sql.*;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendRequestDatabaseRepository implements Repository<Tuple<Long,Long>, FriendRequest>
+public class FriendRequestDatabaseRepository implements PagingRepository<Tuple<Long,Long>, FriendRequest>
 {
     private Connection connection;
 
@@ -24,6 +25,7 @@ public class FriendRequestDatabaseRepository implements Repository<Tuple<Long,Lo
             e.printStackTrace();
         }
     }
+
 
     @Override
     public FriendRequest findOne(Tuple<Long,Long> id)
@@ -149,4 +151,91 @@ public class FriendRequestDatabaseRepository implements Repository<Tuple<Long,Lo
         this.save(entity);
         return null;
     }
+
+    @Override
+    public Page<FriendRequest> findAll(Pageable pageable) {
+        Paginator<FriendRequest> paginator = new Paginator<FriendRequest>(pageable, this.findAll());
+        return paginator.paginate();
+    }
+
+    public Page<FriendRequest> findAllReguestSend(Long id, Pageable pageable)
+    {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        try
+        {
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * from Cerere WHERE idFrom = (?) LIMIT ? OFFSET ?");
+            statement.setLong(1, id);
+            statement.setInt(2,pageable.getPageSize());
+            statement.setInt(3,pageable.getPageSize() * pageable.getPageNumber());
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next())
+            {
+                Long idFrom = resultSet.getLong("idFrom");
+                Long idTo = resultSet.getLong("idTo");
+                String status = resultSet.getString("status");
+                LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+
+                Status finalStatus = null;
+                switch(status)
+                {
+                    case "PENDING": { finalStatus = Status.PENDING; break; }
+                    case "APPROVED": { finalStatus = Status.APPROVED; break; }
+                    case "REJECTED": { finalStatus = Status.REJECTED; break; }
+                }
+
+                FriendRequest friendRequest = new FriendRequest(idFrom, idTo);
+                friendRequest.setStatus(finalStatus);
+                friendRequest.setId(new Tuple<>(idFrom, idTo));
+                friendRequest.setDate(date);
+                friendRequests.add(friendRequest);
+            }
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    public Page<FriendRequest> findAllReguestReceive(Long id, Pageable pageable)
+    {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        try
+        {
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * from Cerere WHERE idTo = (?) LIMIT ? OFFSET ?");
+            statement.setLong(1, id);
+            statement.setInt(2,pageable.getPageSize());
+            statement.setInt(3,pageable.getPageSize() * pageable.getPageNumber());
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next())
+            {
+                Long idFrom = resultSet.getLong("idFrom");
+                Long idTo = resultSet.getLong("idTo");
+                String status = resultSet.getString("status");
+                LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+
+                Status finalStatus = null;
+                switch(status)
+                {
+                    case "PENDING": { finalStatus = Status.PENDING; break; }
+                    case "APPROVED": { finalStatus = Status.APPROVED; break; }
+                    case "REJECTED": { finalStatus = Status.REJECTED; break; }
+                }
+
+                FriendRequest friendRequest = new FriendRequest(idFrom, idTo);
+                friendRequest.setStatus(finalStatus);
+                friendRequest.setId(new Tuple<>(idFrom, idTo));
+                friendRequest.setDate(date);
+                friendRequests.add(friendRequest);
+            }
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
 }

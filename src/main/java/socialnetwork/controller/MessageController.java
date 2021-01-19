@@ -5,12 +5,19 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import socialnetwork.MyException;
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.*;
@@ -19,6 +26,7 @@ import socialnetwork.domain.validators.MessageValidator;
 import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.event.MessageEvent;
 import socialnetwork.observer.Observer;
+import socialnetwork.paging.PagingRepository;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.database.AccountDatabaseRepository;
 import socialnetwork.repository.database.FriendshipDatabaseRepository;
@@ -27,6 +35,8 @@ import socialnetwork.repository.database.UserDatabaseRepository;
 import socialnetwork.service.MessageService;
 import socialnetwork.service.UserService;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +50,27 @@ public class MessageController implements Observer<MessageEvent> {
     public ListView<String> messageList;
     public TextField messageField;
     public Label errorMessage;
+    public DatePicker calendar1;
+    public DatePicker calendar2;
+
+    public Button buttonBack;
+    public Button buttonView;
+    public Button buttonSendToAll;
 
     private MessageService messageService;
     private UserService userService;
     ObservableList<User> modelFriends = FXCollections.observableArrayList();
     ObservableList<String> messages = FXCollections.observableArrayList();
 
-    User friend;
+    private User friend;
+    private Stage stage = new Stage();
+
+    public void setStage(Stage stage1) { this.stage = stage1; }
+
+    public DatePicker getDate1(){return calendar1;}
+    public DatePicker getDate2(){return calendar2;}
+    public User getFriend(){return friend;}
+
 
     public void initFriends()
     {
@@ -78,7 +102,7 @@ public class MessageController implements Observer<MessageEvent> {
         final String username= ApplicationContext.getPROPERTIES().getProperty("database.socialnetwork.username");
         final String password= ApplicationContext.getPROPERTIES().getProperty("database.socialnetwork.password");
 
-        Repository<Long, User> userDatabaseRepository = new UserDatabaseRepository(url, username, password);
+        PagingRepository<Long, User> userDatabaseRepository = new UserDatabaseRepository(url, username, password);
         Repository<Tuple<Long, Long>, Friendship> friendshipDatabaseRepository = new FriendshipDatabaseRepository(url, username, password);
         Repository<String, Account> accountDatabaseRepository = new AccountDatabaseRepository(url, username, password);
         Repository<Long, Message> messageDatabaseRepository = new MessageDatabaseRepository(url, username, password);
@@ -95,7 +119,31 @@ public class MessageController implements Observer<MessageEvent> {
 
         this.errorMessage.setText("");
 
+        buttonView.setTooltip(new Tooltip("View activity"));
+        buttonSendToAll.setTooltip(new Tooltip("Send to all"));
+        buttonBack.setTooltip(new Tooltip("Home page"));
+
         friendsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        messageField.setPromptText("Type a message...");
+        calendar1.setPromptText("Start date");
+        calendar2.setPromptText("End date");
+
+        InputStream inputBack = getClass().getResourceAsStream("/images/home2.png");
+        Image imageBack = new Image(inputBack, 40,40, true, true);
+        buttonBack.setBackground(Background.EMPTY);
+        buttonBack.setGraphic(new ImageView(imageBack));
+
+        InputStream inputView = getClass().getResourceAsStream("/images/activity.png");
+        Image imageView = new Image(inputView, 35,35, true, true);
+        buttonView.setBackground(Background.EMPTY);
+        buttonView.setGraphic(new ImageView(imageView));
+
+        InputStream inputSendToAll = getClass().getResourceAsStream("/images/send.png");
+        Image imageSendToAll = new Image(inputSendToAll, 35,35, true, true);
+        buttonSendToAll.setBackground(Background.EMPTY);
+        buttonSendToAll.setGraphic(new ImageView(imageSendToAll));
+
 
         this.friendsTable.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
@@ -164,6 +212,97 @@ public class MessageController implements Observer<MessageEvent> {
             errorMessage.setTextFill(Color.DARKRED);
         }
         messageField.clear();
+
+    }
+
+    public void handleBack(ActionEvent actionEvent) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/Home.fxml"));
+            GridPane root = loader.load();
+            HomeController controller = loader.getController();
+            Scene scene = new Scene(root, 600, 300);
+            stage.setTitle("Home");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image("/images/home.png"));
+            stage.setScene(scene);
+            controller.setStage(stage);
+            stage.show();
+        }
+        catch (MyException e) {
+            errorMessage.setText(e.getMessage());
+            errorMessage.setTextFill(Color.DARKRED);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void handleView(ActionEvent actionEvent) {
+        try
+        {
+            MessageViewController.setFriend(friend);
+
+            if(friend == null)
+            {
+                this.errorMessage.setText("No item selected!");
+                this.errorMessage.setTextFill(Color.DARKRED);
+            }
+            else {
+                if(getDate1() == null || getDate2() == null)
+                {
+                    this.errorMessage.setText("No date selected!");
+                    this.errorMessage.setTextFill(Color.DARKRED);
+                }
+                else {
+                    MessageViewController.setDate1(getDate1());
+                    MessageViewController.setDate2(getDate2());
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/view/MessageViewPDF.fxml"));
+                    GridPane root = loader.load();
+                    Scene scene = new Scene(root, 600, 300);
+                    MessageViewController controller = loader.getController();
+                    stage.setTitle("Messages View");
+                    stage.setResizable(false);
+                    stage.getIcons().add(new Image("/images/message.png"));
+                    stage.setScene(scene);
+                    controller.setStage(stage);
+                    stage.show();
+                }
+            }
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void handleActivity(ActionEvent actionEvent) {
+
+        try
+        {
+            ActivityController.setDate1(getDate1());
+            ActivityController.setDate2(getDate2());
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/ActivityView.fxml"));
+            GridPane root = loader.load();
+            Scene scene = new Scene(root, 400, 500);
+            ActivityController controller = loader.getController();
+            //Stage stage = new Stage();
+            stage.setTitle("Activity View");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image("/images/message.png"));
+            stage.setScene(scene);
+            controller.setStage(stage);
+            stage.show();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 }

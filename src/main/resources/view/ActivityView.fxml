@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.ActivityController">
+
+    <Label fx:id="labelForActivity" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+
+    <TableView fx:id="friendsTable" GridPane.rowIndex="3">
+        <columns>
+            <TableColumn fx:id="friendColumnFirstName" text="First Name" />
+            <TableColumn fx:id="friendColumnLastName" text="Last Name" />
+        </columns>
+    </TableView>
+
+    <ListView fx:id="messageList" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+    <DatePicker fx:id="calendar1" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <DatePicker fx:id="calendar2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="10">
+        <Button fx:id="Generate" onAction="#handleGenerate" GridPane.columnIndex="1" GridPane.rowIndex="3"> </Button>
+        <Button fx:id="buttonExport" onAction="#handleExport" GridPane.rowIndex="3"> </Button>
+        <Button fx:id="buttonBack" onAction="#handleBack" GridPane.columnIndex="1" GridPane.rowIndex="0"> </Button>
+    </HBox>
+
+    <Label fx:id="messageToUser" GridPane.rowIndex="5" />
+
+
+</GridPane>

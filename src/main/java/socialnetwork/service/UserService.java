@@ -9,15 +9,23 @@ import socialnetwork.event.ChangeEventType;
 import socialnetwork.event.UserEvent;
 import socialnetwork.observer.Observable;
 import socialnetwork.observer.Observer;
+import socialnetwork.paging.Page;
+import socialnetwork.paging.Pageable;
+import socialnetwork.paging.PageableImplementation;
+import socialnetwork.paging.PagingRepository;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.database.MessageDatabaseRepository;
+import socialnetwork.repository.database.UserDatabaseRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class UserService implements Observable<UserEvent>
 {
-    private final Repository<Long, User> userRepository;
+    private PagingRepository<Long, User> userRepository;
+    //private final Repository<Long, User> userRepository;
     private final Repository<Tuple<Long,Long>, Friendship> friendshipRepository;
     private final Repository<String, Account> accountRepository;
     private final Validator<User> validator;
@@ -25,7 +33,7 @@ public class UserService implements Observable<UserEvent>
 
     private List<Observer<UserEvent>> observers;
 
-    public UserService(Repository<Long,User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Repository<String, Account> accountRepository, Validator<User> validator, Validator<Account> accountValidator)
+    public UserService(PagingRepository<Long, User> userRepository, Repository<Tuple<Long,Long>,Friendship> friendshipRepository, Repository<String, Account> accountRepository, Validator<User> validator, Validator<Account> accountValidator)
     {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
@@ -81,7 +89,9 @@ public class UserService implements Observable<UserEvent>
         for(User user : this.userRepository.findAll())
         {
             Map<User, LocalDateTime> friends = this.getFriends(user.getId());
-            for(User friend : friends.keySet()) { user.getFriends().add(friend); }
+            for(User friend : friends.keySet())
+                user.getFriends().add(friend);
+
             users.add(user);
         }
         return users;
@@ -143,4 +153,53 @@ public class UserService implements Observable<UserEvent>
     public void notifyObservers(UserEvent t) {
         observers.forEach(x -> x.update(t));
     }
+
+
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<User> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getUsersOnPage(this.page);
+    }
+
+    public Set<User> getUsersOnPage(int page) {
+        this.page=page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<User> studentPage = userRepository.findAll(pageable);
+        return studentPage.getContent().collect(Collectors.toSet());
+    }
+
+    public Page<User> findAll(Pageable pageable)
+    {
+        return userRepository.findAll(pageable);
+    }
+
+    public Page<User> findALLPotentialFriends(Long id, Pageable pageable){return ((UserDatabaseRepository) userRepository).findAllPotentialFriends(id,pageable);}
+
+    public Page<User> findUsersMatch(String text, Pageable pageable)
+    {
+        return ((UserDatabaseRepository) userRepository).findUsersMatch(text, pageable);
+    }
+
+    public Page<User> findFriendsMatch(String text, Long id, Pageable pageable)
+    {
+        return ((UserDatabaseRepository) userRepository).findFriendsMatch(text, id, pageable);
+    }
+
 }

@@ -1,10 +1,17 @@
 package socialnetwork.repository.database;
 
 import socialnetwork.domain.Account;
-import socialnetwork.domain.User;
+import socialnetwork.repository.AESUtil;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.RepositoryException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,9 +52,11 @@ public class AccountDatabaseRepository implements Repository<String, Account>
             String password = resultSet.getString("password");
             Long userID = resultSet.getLong("idUser");
 
-            account = new Account(username, password, userID);
+            String decryptedPassword = AESUtil.decrypt(AESUtil.Algorithm, password, AESUtil.key, AESUtil.generateIv());
+
+            account = new Account(username, decryptedPassword, userID);
             account.setId(username);
-        }catch (SQLException e)
+        }catch (SQLException | NoSuchAlgorithmException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException e)
         {
             e.printStackTrace();
         }
@@ -90,14 +99,17 @@ public class AccountDatabaseRepository implements Repository<String, Account>
 
         try
         {
+            IvParameterSpec ivParameterSpec = AESUtil.generateIv();
+            String cipherText = AESUtil.encrypt(AESUtil.Algorithm, entity.getPassword(), AESUtil.key, ivParameterSpec);
+
             PreparedStatement statement = this.connection.prepareStatement("INSERT INTO Cont(username, password, idUser) VALUES (?, ?, ?)");
 
             statement.setString(1, entity.getId());
-            statement.setString(2, entity.getPassword());
+            statement.setString(2,cipherText);
             statement.setLong(3, entity.getUserID());
 
             statement.executeUpdate();
-        }catch (SQLException e)
+        }catch (SQLException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException e)
         {
             e.printStackTrace();
         }

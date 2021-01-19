@@ -1,63 +1,51 @@
 .root {
-    -fx-background-image: url("/images/background2.jpg");
+    -fx-background-image: url("/images/original.gif");
     -fx-background-repeat: stretch;
     -fx-background-size: 1600 1200;
     -fx-background-position: center center;
 }
 
+.table-view{
+    -fx-background-color: transparent;
+}
+
+.table-column{
+    -fx-background-color: transparent;
+}
+
+.table-row-cell{
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: transparent;
+}
+
+.table-view .filler{
+    -fx-background-color: transparent;
+}
+
+#hyperLink{
+    -fx-text-fill: WHITE;
+}
+
 #welcomeMessage{
 
     -fx-font-size: 20px;
+}
 
+#title{
+    -fx-font-size: 20px;
 }
 
 #labelForTable {
+
     -fx-font-size: 20px;
     -fx-text-alignment: center;
 }
 
-#requestsSentTable {
-    -fx-background-image: url("/images/background2.jpg");
-}
-
-#requestsReceivedTable {
-    -fx-background-image: url("/images/background2.jpg");
-}
-
-#usersTable {
-    -fx-background-image: url("/images/background2.jpg");
-}
-
-#friendsTable {
-    -fx-background-image: url("/images/background2.jpg");
-}
-
-#buttonSendFriendRequest {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonRemoveFriend {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonRequests {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonAccept {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonReject {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonRemove {
-    -fx-background-image: url("/images/buttonbg.jpg");
-}
-
-#buttonRefresh {
-    -fx-background-image: url("/images/buttonbg.jpg");
+#labelForActivity{
+    -fx-font-size: 15px;
 }
 
 .list-cell {

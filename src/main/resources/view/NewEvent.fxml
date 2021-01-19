@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<GridPane alignment="top_left" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.CreateEventController">
+
+    <Label fx:id="title" text="Create an event" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <Label fx:id="titleName" text="Name" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <TextField fx:id="textName"  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+    <Label fx:id="titleDescription" text="Description" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <TextField fx:id="textDescription" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+    <Label fx:id="titleDate" text="Date" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <DatePicker fx:id="calendarDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+    <Label fx:id="titleHour" text="Hour" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+    <TextField fx:id="textHour" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+    <Label fx:id="messageToUser" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+
+    <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
+        <Button fx:id="createButton" onAction="#handleCreateEvent" />
+    </HBox>
+
+    <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="7">
+        <Hyperlink text="Back to events!" onAction="#handleBack">
+        </Hyperlink>
+    </HBox>
+
+</GridPane>

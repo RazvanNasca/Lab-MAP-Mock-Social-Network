@@ -21,11 +21,11 @@
     <Label fx:id="messageToUser" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
 
     <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
-        <Button id="signInButton" onAction="#handleSubmitButtonAction" text="Sign In" />
+        <Button fx:id="signInButton" onAction="#handleSubmitButtonAction" />
     </HBox>
 
     <HBox alignment="bottom_right" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-        <Hyperlink text="Don't have an account? Sign up here." onAction="#handleSignUpAction">
+        <Hyperlink fx:id="hyperLink" text="Don't have an account? Sign up here." onAction="#handleSignUpAction">
         </Hyperlink>
     </HBox>
 

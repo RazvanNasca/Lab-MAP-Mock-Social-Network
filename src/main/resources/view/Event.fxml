@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="top_left" hgap="10" styleClass="root" stylesheets="/style/style.css" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.EventController">
+
+    <Label alignment="CENTER" fx:id="labelForTable" text="Events" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+
+    <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
+       <!-- <Button fx:id="buttonJoinEvent" onAction="#handleJoinEvent" text="Join" />
+        <Button fx:id="buttonRemoveEvent" onAction="#handleRemoveEvent" text="Remove" /> -->
+        <Button fx:id="buttonCreate" onAction="#handleCreate" />
+    </HBox>
+
+    <Button fx:id="buttonBack" onAction="#handleBack" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+
+    <HBox GridPane.columnIndex="0" GridPane.rowIndex="1" >
+        <Label text="                                "/>
+        <Label fx:id="eventsUserTitle" text="Subs"/>
+    </HBox>
+
+    <TableView fx:id="eventsUserTable" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <columns>
+            <TableColumn fx:id="eventColumnName" text="Name" />
+            <TableColumn fx:id="eventColumnDescription" text="Description" />
+            <TableColumn fx:id="eventColumnDate" text="Date" />
+        </columns>
+    </TableView>
+
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1"  >
+        <Label text="                             "/>
+        <Label fx:id="eventsTitle" text="All events" />
+    </HBox>
+
+    <TableView fx:id="eventsTable" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <columns>
+            <TableColumn fx:id="allEventsColumnName" text="Name" />
+            <TableColumn fx:id="allEventsColumnDescription" text="Description" />
+            <TableColumn fx:id="allEventsColumnDate" text="Date" />
+        </columns>
+    </TableView>
+
+    <Label fx:id="messageToUser" GridPane.rowIndex="3" />
+
+   <Pagination fx:id="paginatorUsersEvents" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+   <Pagination fx:id="paginatorEvents" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+
+</GridPane>
